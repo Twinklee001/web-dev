@@ -1,0 +1,24 @@
+### Register
+POST http://localhost:8080/api/auth/register
+Content-Type: application/json
+
+{
+  "fullName": "Nguyen Van Hoang",
+  "email": "hoangjwt@test.com",
+  "password": "12345678"
+}
+
+### Login
+POST http://localhost:8080/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "hoangjwt@test.com",
+  "password": "12345678"
+}
+
+> {% client.global.set("token", response.body.data.accessToken); %}
+
+### Me
+GET http://localhost:8080/api/auth/me
+Authorization: Bearer {{token}}
