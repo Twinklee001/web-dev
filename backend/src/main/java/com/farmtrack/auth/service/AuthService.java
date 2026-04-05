@@ -9,6 +9,7 @@ import com.farmtrack.common.exception.UnauthorizedException;
 import com.farmtrack.user.entity.User;
 import com.farmtrack.user.entity.UserStatus;
 import com.farmtrack.user.repository.UserRepository;
+import com.farmtrack.common.security.JwtService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtService jwtService;
 
     public UserResponse register(RegisterRequest request) {
         if (userRepository.existsByEmail(request.email())) {
@@ -45,7 +47,7 @@ public class AuthService {
         }
 
         return new LoginResponse(
-                "temporary-token",
+                jwtService.generateToken(user.getEmail()),
                 "Bearer",
                 mapToUserResponse(user)
         );
@@ -59,5 +61,12 @@ public class AuthService {
                 user.getStatus(),
                 user.getCreatedAt()
         );
+    }
+
+    public UserResponse getCurrentUser(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UnauthorizedException("User not found"));
+
+        return mapToUserResponse(user);
     }
 }

@@ -16,3 +16,8 @@ spring:
   flyway:
     enabled: true
     locations: classpath:db/migration
+
+app:
+  jwt:
+    secret: this-is-a-very-long-demo-secret-key-for-agri-track-2026
+    expiration-ms: 86400000
