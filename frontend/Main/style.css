@@ -187,3 +187,33 @@
   pointer-events: auto;
   transform: translateY(0);
 }
+
+/* ===== FLOATING AI CHATBOX ===== */
+.ai-chat-panel-hidden {
+  max-height: 0;
+  opacity: 0;
+  transform: scale(0.92) translateY(12px);
+  transform-origin: bottom right;
+  pointer-events: none;
+  transition: max-height 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.2s ease,
+              transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.ai-chat-panel-open {
+  max-height: 600px;
+  opacity: 1;
+  transform: scale(1) translateY(0);
+  pointer-events: auto;
+  transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.25s ease 0.05s,
+              transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* FAB icon swap */
+.ai-fab-open .ai-fab-icon-open {
+  transform: scale(0) rotate(90deg);
+}
+.ai-fab-open .ai-fab-icon-close {
+  transform: scale(1) rotate(0deg);
+}

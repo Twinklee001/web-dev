@@ -200,11 +200,9 @@
               <div class="mb-4 flex flex-wrap gap-2" id="timeline-actions-container">
                 <!-- Rendered by JS -->
               </div>
-              <div
-                class="min-h-[120px] rounded-[24px] border border-white/70 bg-white/80 p-4 text-sm text-slate-400 shadow-inner">
-                Ghi lại hoạt động tưới nước, bón phân, phun thuốc và cập nhật
-                dữ liệu theo timeline để phục vụ truy xuất...
-              </div>
+              <textarea
+                class="w-full min-h-[120px] resize-y rounded-[24px] border border-slate-200 bg-white/80 p-4 text-sm text-slate-700 shadow-inner outline-none transition focus:border-emerald-300 focus:bg-white focus:ring-2 focus:ring-emerald-100 placeholder:text-slate-400"
+                placeholder="Ghi lại hoạt động tưới nước, bón phân, phun thuốc và cập nhật dữ liệu theo timeline để phục vụ truy xuất..."></textarea>
               <div class="mt-4 flex items-center justify-between gap-3">
                 <button
                   class="inline-flex items-center gap-2 rounded-2xl border border-white/70 bg-white/70 px-4 py-2 text-sm text-emerald-700 transition duration-300 hover:-translate-y-0.5 hover:bg-emerald-50">
@@ -310,48 +308,6 @@
         </div>
       </div>
 
-      <!-- AI Chatbox Hỗ Trợ -->
-      <div
-        class="group glass-perf relative overflow-hidden rounded-[28px] border border-white/60 bg-white/90 shadow-[0_18px_60px_rgba(16,24,40,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_28px_80px_rgba(16,24,40,0.12)]">
-        <div class="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.82),rgba(255,255,255,0.35))]"></div>
-        <div
-          class="absolute inset-0 opacity-0 transition duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_top_right,rgba(16,185,129,0.12),transparent_28%)]">
-        </div>
-        <div class="relative p-5">
-          <div class="flex items-center justify-between">
-            <div>
-              <p class="text-sm text-slate-500">
-                Hỏi về chăm sóc, tưới, bón, phòng bệnh
-              </p>
-              <h3 class="text-xl font-bold">AI CHATBOX HỖ TRỢ</h3>
-            </div>
-            <i data-lucide="bot" class="h-6 w-6 text-emerald-700"></i>
-          </div>
-          <div class="mt-4 space-y-3">
-            <div
-              class="ml-auto max-w-[88%] rounded-[20px] rounded-br-md bg-emerald-500 px-4 py-3 text-sm text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-md">
-              Lô D4 nhiệt độ cao, có nên tưới thêm không?
-            </div>
-            <div
-              class="max-w-[92%] rounded-[20px] rounded-bl-md border border-emerald-100 bg-emerald-50 px-4 py-4 text-sm leading-7 text-slate-700">
-              Nên kiểm tra độ ẩm đất trước. Nếu dưới ngưỡng an toàn, hệ thống
-              gợi ý tưới sớm vào buổi sáng thay vì giữa trưa để giảm bay hơi.
-            </div>
-            <div class="flex gap-2">
-              <div
-                class="flex flex-1 items-center justify-between rounded-2xl border border-white/70 bg-white/80 px-4 py-3 text-sm text-slate-400 transition duration-300 hover:border-emerald-100">
-                <span>Nhập câu hỏi về lô trồng...</span>
-                <i data-lucide="message-circle" class="h-4 w-4 text-slate-400"></i>
-              </div>
-              <button
-                class="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-r from-emerald-500 to-cyan-400 px-4 py-3 text-sm font-bold text-white transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_30px_rgba(16,185,129,0.24)]">
-                <i data-lucide="send-horizontal" class="h-4 w-4"></i>
-                Gửi
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <!-- Nhận Diện Sơ Bộ Bệnh Cây -->
       <div
@@ -412,12 +368,58 @@
       </div>
     </div>
   </main>
-  <!-- Scroll-to-top button -->
-  <button id="scroll-top-btn"
-    class="fixed bottom-8 right-8 z-50 grid h-12 w-12 place-items-center rounded-full bg-gradient-to-r from-emerald-500 to-cyan-400 text-white shadow-[0_8px_24px_rgba(16,185,129,0.3)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_14px_30px_rgba(16,185,129,0.4)] opacity-0 pointer-events-none translate-y-4"
-    aria-label="Về đầu trang">
-    <i data-lucide="arrow-up" class="h-5 w-5"></i>
-  </button>
+  <!-- ===== FLOATING AI CHATBOX WIDGET ===== -->
+  <div id="ai-chat-widget" class="fixed bottom-8 right-8 z-[60] flex flex-col items-end gap-3">
+    <!-- Scroll-to-top (sits above the FAB) -->
+    <button id="scroll-top-btn"
+      class="grid h-11 w-11 place-items-center rounded-full bg-white/90 border border-emerald-200 text-emerald-700 shadow-lg transition-all duration-300 hover:-translate-y-1 hover:shadow-xl opacity-0 pointer-events-none translate-y-4"
+      aria-label="Về đầu trang">
+      <i data-lucide="arrow-up" class="h-5 w-5"></i>
+    </button>
+
+    <!-- Chat Panel -->
+    <div id="ai-chat-panel"
+      class="ai-chat-panel-hidden w-[380px] overflow-hidden rounded-[24px] border border-emerald-200/60 bg-white/95 shadow-[0_24px_60px_rgba(16,24,40,0.14)]">
+      <!-- Header -->
+      <div class="flex items-center justify-between border-b border-emerald-100 bg-gradient-to-r from-emerald-500 to-cyan-400 px-5 py-3.5">
+        <div class="flex items-center gap-3">
+          <div class="grid h-9 w-9 place-items-center rounded-full bg-white/20">
+            <i data-lucide="leaf" class="h-5 w-5 text-white"></i>
+          </div>
+          <div>
+            <div class="text-sm font-bold text-white">AI Nông nghiệp</div>
+            <div class="text-[11px] text-emerald-100">Hỗ trợ chăm sóc cây trồng</div>
+          </div>
+        </div>
+        <button id="ai-chat-minimize" class="grid h-8 w-8 place-items-center rounded-full bg-white/20 text-white transition hover:bg-white/30" aria-label="Thu nhỏ">
+          <i data-lucide="minus" class="h-4 w-4"></i>
+        </button>
+      </div>
+      <!-- Messages -->
+      <div class="space-y-3 p-5 max-h-[320px] overflow-y-auto">
+        <div class="ml-auto max-w-[88%] rounded-[18px] rounded-br-md bg-emerald-500 px-4 py-2.5 text-sm text-white shadow-sm">
+          Lô D4 nhiệt độ cao, có nên tưới thêm không?
+        </div>
+        <div class="max-w-[92%] rounded-[18px] rounded-bl-md border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm leading-6 text-slate-700">
+          Nên kiểm tra độ ẩm đất trước. Nếu dưới ngưỡng an toàn, hệ thống gợi ý tưới sớm vào buổi sáng thay vì giữa trưa để giảm bay hơi.
+        </div>
+      </div>
+      <!-- Input -->
+      <div class="flex items-center gap-2 border-t border-emerald-100 px-4 py-3">
+        <input type="text" placeholder="Nhập câu hỏi về lô trồng..." class="flex-1 rounded-xl border border-slate-200 bg-slate-50 px-4 py-2.5 text-sm outline-none transition focus:border-emerald-300 focus:ring-2 focus:ring-emerald-100" />
+        <button class="grid h-10 w-10 place-items-center rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-400 text-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-md">
+          <i data-lucide="send-horizontal" class="h-4 w-4"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- FAB Toggle Button -->
+    <button id="ai-chat-fab"
+      class="group grid h-14 w-14 place-items-center rounded-full bg-gradient-to-br from-emerald-500 to-cyan-400 text-white shadow-[0_8px_28px_rgba(16,185,129,0.35)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_16px_36px_rgba(16,185,129,0.45)]">
+      <i data-lucide="leaf" class="ai-fab-icon-open h-7 w-7 transition-transform duration-300"></i>
+      <i data-lucide="x" class="ai-fab-icon-close absolute h-6 w-6 transition-transform duration-300 scale-0"></i>
+    </button>
+  </div>
   <div id="auth-modal-root"></div>
   <link rel="stylesheet" href="../login-signup/login-signup.css" />
   <script src="../login-signup/login-signup.js"></script>

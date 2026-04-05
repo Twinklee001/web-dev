@@ -267,13 +267,33 @@ document.addEventListener("DOMContentLoaded", () => {
   timelineActionsContainer.innerHTML = timelineActions
     .map(
       (action) => `
-    <div class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold ${action.color}">
+    <button type="button" class="timeline-action-btn inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500 transition-all duration-300 hover:border-slate-300 focus:scale-95" data-color="${action.color}">
       <i data-lucide="${action.icon}" class="h-4 w-4"></i>
       ${action.label}
-    </div>
+    </button>
   `,
     )
     .join("");
+
+  // Add click logic for timeline actions (allow multi-select)
+  setTimeout(() => { // ensure DOM is ready
+    document.querySelectorAll(".timeline-action-btn").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const colorClasses = this.dataset.color.split(" ");
+        const isSelected = this.classList.contains("selected");
+        
+        if (isSelected) {
+          // Deselect
+          this.classList.remove("selected", "border-transparent", ...colorClasses);
+          this.classList.add("border-slate-200", "bg-slate-50", "text-slate-500");
+        } else {
+          // Select
+          this.classList.add("selected", "border-transparent", ...colorClasses);
+          this.classList.remove("border-slate-200", "bg-slate-50", "text-slate-500");
+        }
+      });
+    });
+  }, 0);
 
   // --- Activity Timeline (Hoạt động gần đây) ---
   const activityTimelineContainer = document.getElementById(
@@ -639,6 +659,31 @@ document.addEventListener("DOMContentLoaded", () => {
   scrollTopBtn.addEventListener("click", () => {
     window.scrollTo({ top: 0, behavior: "smooth" });
   });
+
+  // ==================== FLOATING AI CHATBOX ====================
+  const aiChatFab = document.getElementById("ai-chat-fab");
+  const aiChatPanel = document.getElementById("ai-chat-panel");
+  const aiChatMinimize = document.getElementById("ai-chat-minimize");
+  let isChatOpen = false;
+
+  function toggleChat(open) {
+    isChatOpen = open;
+    if (open) {
+      aiChatPanel.classList.remove("ai-chat-panel-hidden");
+      aiChatPanel.classList.add("ai-chat-panel-open");
+      aiChatFab.classList.add("ai-fab-open");
+    } else {
+      aiChatPanel.classList.remove("ai-chat-panel-open");
+      aiChatPanel.classList.add("ai-chat-panel-hidden");
+      aiChatFab.classList.remove("ai-fab-open");
+    }
+  }
+
+  aiChatFab.addEventListener("click", () => toggleChat(!isChatOpen));
+  aiChatMinimize.addEventListener("click", () => toggleChat(false));
+
+  // Re-render lucide icons for the floating widget
+  lucide.createIcons({ node: document.getElementById("ai-chat-widget") });
 });
 //form-login-signup
 function loadAuthModal() {
