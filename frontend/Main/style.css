@@ -1,14 +1,19 @@
 /* ===== SMOOTH SCROLL & PERFORMANCE ===== */
-html {
-  scroll-behavior: smooth;
+/* Removed scroll-behavior: smooth. It overrides native OS scrolling algorithm. */
+
+/* Bypass purely cosmetic hover states while scrolling to free up GPU hit-test budget */
+.disable-hover, .disable-hover * {
+  pointer-events: none !important;
 }
 
 /* GPU-accelerate all glass cards to prevent scroll jank from backdrop-filter */
 .glass-perf {
+  contain: layout paint style; /* Isolates layout strictly to the card */
+  content-visibility: auto; /* Skips rendering entirely if card is off-screen */
+  contain-intrinsic-size: 200px;
   -webkit-backface-visibility: hidden;
   backface-visibility: hidden;
   transform: translateZ(0);
-  will-change: transform;
 }
 
 /* ===== SCROLL REVEAL ANIMATIONS ===== */
@@ -17,6 +22,7 @@ html {
 .scroll-reveal {
   opacity: 0;
   transform: translateY(40px);
+  will-change: transform, opacity;
   transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -30,6 +36,7 @@ html {
 .scroll-reveal-left {
   opacity: 0;
   transform: translateX(-50px);
+  will-change: transform, opacity;
   transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -42,6 +49,7 @@ html {
 .scroll-reveal-right {
   opacity: 0;
   transform: translateX(50px);
+  will-change: transform, opacity;
   transition: opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -55,6 +63,7 @@ html {
 .scroll-reveal-scale {
   opacity: 0;
   transform: scale(0.9);
+  will-change: transform, opacity;
   transition: opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
               transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
 }
@@ -110,3 +119,71 @@ html {
 .anim-news:nth-child(1) { animation-delay: 0s; }
 .anim-news:nth-child(2) { animation-delay: 0.07s; }
 .anim-news:nth-child(3) { animation-delay: 0.14s; }
+
+/* ===== STICKY HEADER SCROLL STATE ===== */
+.header-scrolled {
+  box-shadow: 0 4px 24px rgba(16, 24, 40, 0.08);
+}
+
+/* ===== TOP-NAV COLLAPSE / EXPAND ===== */
+.top-nav-hidden {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom-width: 0 !important;
+  transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.25s ease,
+              padding 0.35s ease;
+}
+
+.top-nav-visible {
+  max-height: 200px;
+  opacity: 1;
+  transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.3s ease 0.05s,
+              padding 0.35s ease;
+}
+
+/* ===== NAV DROPDOWN (inside header) ===== */
+#nav-dropdown {
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+  transition: max-height 0.35s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.25s ease;
+}
+
+#nav-dropdown.dropdown-open {
+  max-height: 200px;
+  opacity: 1;
+  transition: max-height 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+              opacity 0.3s ease 0.05s;
+}
+
+/* Hamburger notification dot when nav is collapsed */
+#hamburger-btn .nav-collapsed-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #10b981, #06b6d4);
+  opacity: 0;
+  transform: scale(0);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+#hamburger-btn .nav-collapsed-dot.active {
+  opacity: 1;
+  transform: scale(1);
+}
+
+/* ===== SCROLL-TO-TOP BUTTON ===== */
+#scroll-top-btn.visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(0);
+}
