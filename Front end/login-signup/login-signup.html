@@ -1,0 +1,225 @@
+<div id="auth-modal" class="auth-modal hidden">
+  <div class="auth-modal__backdrop" id="auth-backdrop"></div>
+
+  <div
+    class="auth-modal__dialog is-login"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="auth-modal-title"
+  >
+    <button
+      id="close-auth-modal"
+      class="auth-modal__close"
+      aria-label="Đóng form"
+    >
+      <i data-lucide="x" class="h-5 w-5"></i>
+    </button>
+
+    <div class="auth-modal__visual">
+      <div class="auth-hero-glow auth-hero-glow--one"></div>
+      <div class="auth-hero-glow auth-hero-glow--two"></div>
+
+      <div class="auth-visual-content">
+        <div class="auth-badge">
+          <i data-lucide="leaf" class="h-4 w-4"></i>
+          Agri - Track
+        </div>
+
+        <h2 class="auth-visual-title">Canh tác thông minh, quản lý dễ dàng</h2>
+        <p class="auth-visual-text">
+          Theo dõi lô trồng, nhật ký canh tác, thời tiết và truy xuất nguồn gốc
+          trên một nền tảng hiện đại.
+        </p>
+
+        <div class="auth-visual-cards">
+          <div class="auth-mini-card">
+            <i data-lucide="sprout" class="h-5 w-5"></i>
+            <span>Quản lý lô trồng</span>
+          </div>
+          <div class="auth-mini-card">
+            <i data-lucide="cloud-sun" class="h-5 w-5"></i>
+            <span>Dữ liệu thời tiết</span>
+          </div>
+          <div class="auth-mini-card">
+            <i data-lucide="qr-code" class="h-5 w-5"></i>
+            <span>QR truy xuất</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="auth-modal__form-side">
+      <div class="auth-form-side-glow auth-form-side-glow--top"></div>
+      <div class="auth-form-side-glow auth-form-side-glow--bottom"></div>
+
+      <div class="auth-tabs" data-active="login">
+        <span class="auth-tab-indicator"></span>
+        <button class="auth-tab active" type="button" data-auth-tab="login">
+          Đăng nhập
+        </button>
+        <button class="auth-tab" type="button" data-auth-tab="signup">
+          Đăng ký
+        </button>
+      </div>
+
+      <div class="auth-forms">
+        <form id="login-form" class="auth-form active">
+          <div class="auth-form__header">
+            <p class="auth-form__eyebrow">Chào mừng quay lại</p>
+            <h3 id="auth-modal-title" class="auth-form__title">
+              Đăng nhập vào Agri - Track
+            </h3>
+            <p class="auth-form__desc">
+              Truy cập dữ liệu lô trồng, nhật ký và các đề xuất AI của bạn.
+            </p>
+          </div>
+
+          <div class="auth-field auth-stagger-item">
+            <label>Email hoặc số điện thoại</label>
+            <div class="auth-input-wrap">
+              <i data-lucide="mail" class="h-4 w-4"></i>
+              <input type="text" placeholder="Nhập email hoặc số điện thoại" />
+            </div>
+          </div>
+
+          <div class="auth-field auth-stagger-item">
+            <label>Mật khẩu</label>
+            <div class="auth-input-wrap">
+              <i data-lucide="lock" class="h-4 w-4"></i>
+              <input
+                id="login-password-input"
+                type="password"
+                placeholder="Nhập mật khẩu"
+              />
+              <button
+                type="button"
+                class="auth-password-toggle"
+                data-password-target="login-password-input"
+                aria-label="Hiện mật khẩu"
+              >
+                <i data-lucide="eye" class="h-4 w-4"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="auth-row auth-stagger-item">
+            <label class="auth-checkbox">
+              <input type="checkbox" />
+              <span>Ghi nhớ đăng nhập</span>
+            </label>
+            <button type="button" class="auth-link-btn">Quên mật khẩu?</button>
+          </div>
+
+          <button type="submit" class="auth-submit-btn auth-stagger-item">
+            <i data-lucide="log-in" class="h-4 w-4"></i>
+            Đăng nhập
+          </button>
+
+          <div class="auth-divider auth-stagger-item">
+            <span>hoặc tiếp tục với</span>
+          </div>
+
+          <div class="auth-socials auth-stagger-item">
+            <button type="button" class="auth-social-btn">
+              <i data-lucide="mail" class="h-4 w-4"></i>
+              Gmail
+            </button>
+            <button type="button" class="auth-social-btn">
+              <i data-lucide="smartphone" class="h-4 w-4"></i>
+              Số điện thoại
+            </button>
+          </div>
+        </form>
+
+        <form id="signup-form" class="auth-form to-right">
+          <div class="auth-form__header">
+            <p class="auth-form__eyebrow">Bắt đầu cùng Agri - Track</p>
+            <h3 class="auth-form__title">Tạo tài khoản mới</h3>
+            <p class="auth-form__desc">
+              Đăng ký để số hóa vùng trồng, hoạt động canh tác và quản lý chứng
+              nhận dễ hơn.
+            </p>
+          </div>
+
+          <div class="auth-field auth-stagger-item">
+            <label>Họ và tên</label>
+            <div class="auth-input-wrap">
+              <i data-lucide="user" class="h-4 w-4"></i>
+              <input type="text" placeholder="Nhập họ và tên" />
+            </div>
+          </div>
+
+          <div class="auth-field auth-stagger-item">
+            <label>Email</label>
+            <div class="auth-input-wrap">
+              <i data-lucide="mail" class="h-4 w-4"></i>
+              <input type="email" placeholder="Nhập địa chỉ email" />
+            </div>
+          </div>
+
+          <div class="auth-field auth-stagger-item">
+            <label>Số điện thoại</label>
+            <div class="auth-input-wrap">
+              <i data-lucide="phone" class="h-4 w-4"></i>
+              <input type="tel" placeholder="Nhập số điện thoại đăng ký" />
+            </div>
+          </div>
+
+          <div class="auth-field auth-grid-2 auth-stagger-item">
+            <div>
+              <label>Mật khẩu</label>
+              <div class="auth-input-wrap">
+                <i data-lucide="lock" class="h-4 w-4"></i>
+                <input
+                  id="signup-password-input"
+                  type="password"
+                  placeholder="Tạo mật khẩu"
+                />
+                <button
+                  type="button"
+                  class="auth-password-toggle"
+                  data-password-target="signup-password-input"
+                  aria-label="Hiện mật khẩu"
+                >
+                  <i data-lucide="eye" class="h-4 w-4"></i>
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label>Xác nhận</label>
+              <div class="auth-input-wrap">
+                <i data-lucide="shield-check" class="h-4 w-4"></i>
+                <input
+                  id="signup-confirm-input"
+                  type="password"
+                  placeholder="Nhập lại mật khẩu"
+                />
+                <button
+                  type="button"
+                  class="auth-password-toggle"
+                  data-password-target="signup-confirm-input"
+                  aria-label="Hiện mật khẩu"
+                >
+                  <i data-lucide="eye" class="h-4 w-4"></i>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <label class="auth-checkbox auth-checkbox--terms auth-stagger-item">
+            <input type="checkbox" />
+            <span
+              >Tôi đồng ý với điều khoản sử dụng và chính sách bảo mật.</span
+            >
+          </label>
+
+          <button type="submit" class="auth-submit-btn auth-stagger-item">
+            <i data-lucide="user-plus" class="h-4 w-4"></i>
+            Tạo tài khoản
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

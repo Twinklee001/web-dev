@@ -1,4 +1,4 @@
-package backend.src.main.java.com.farmtrack;
+package com.farmtrack;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
