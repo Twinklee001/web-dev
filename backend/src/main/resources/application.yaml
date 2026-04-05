@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: webdev
+  profiles:
+    active: local
+  jackson:
+    time-zone: UTC
+  jpa:
+    open-in-view: false
+
+server:
+  port: 8080
+
+logging:
+  level:
+    root: INFO

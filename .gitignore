@@ -1,0 +1,9 @@
+.idea/
+*.iml
+target/
+out/
+node_modules/
+dist/
+.env
+.env.*
+!.env.example

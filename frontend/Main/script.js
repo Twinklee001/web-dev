@@ -321,10 +321,10 @@ document.addEventListener("DOMContentLoaded", () => {
                   <div class="mt-1 text-sm text-slate-500">${post.meta}</div>
                 </div>
                 <div class="rounded-full px-3 py-1 text-xs font-semibold ${
-                  post.badge === "Đã xác minh"
-                    ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
-                    : "border border-amber-200 bg-amber-50 text-amber-700"
-                }">
+          post.badge === "Đã xác minh"
+              ? "border border-emerald-200 bg-emerald-50 text-emerald-700"
+              : "border border-amber-200 bg-amber-50 text-amber-700"
+      }">
                   ${post.badge}
                 </div>
               </div>
