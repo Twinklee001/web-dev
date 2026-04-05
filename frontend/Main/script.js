@@ -537,7 +537,7 @@ function loadAuthModal() {
             <p class="auth-form__desc">Truy cập dữ liệu lô trồng, nhật ký và các đề xuất AI của bạn.</p>
           </div>
           <div class="auth-field auth-stagger-item">
-            <label>Email hoặc số điện thoại</label>
+            <label>Email </label>
             <div class="auth-input-wrap"><i data-lucide="mail" class="h-4 w-4"></i><input type="text" placeholder="Nhập email hoặc số điện thoại" /></div>
           </div>
           <div class="auth-field auth-stagger-item">
@@ -567,15 +567,15 @@ function loadAuthModal() {
           </div>
           <div class="auth-field auth-stagger-item">
             <label>Họ và tên</label>
-            <div class="auth-input-wrap"><i data-lucide="user" class="h-4 w-4"></i><input type="text" placeholder="Nhập họ và tên" /></div>
+            <div class="auth-input-wrap"><i data-lucide="user" class="h-4 w-4"></i><input id="signup-fullname-input" type="text" placeholder="Nhập họ và tên" /></div>
           </div>
           <div class="auth-field auth-stagger-item">
             <label>Email</label>
-            <div class="auth-input-wrap"><i data-lucide="mail" class="h-4 w-4"></i><input type="email" placeholder="Nhập địa chỉ email" /></div>
+            <div class="auth-input-wrap"><i data-lucide="mail" class="h-4 w-4"></i><input id="signup-email-input" type="email" placeholder="Nhập địa chỉ email" /></div>
           </div>
           <div class="auth-field auth-stagger-item">
             <label>Số điện thoại</label>
-            <div class="auth-input-wrap"><i data-lucide="phone" class="h-4 w-4"></i><input type="tel" placeholder="Nhập số điện thoại đăng ký" /></div>
+            <div class="auth-input-wrap"><i data-lucide="phone" class="h-4 w-4"></i><input id="signup-phone-input" type="tel" placeholder="Nhập số điện thoại đăng ký" /></div>
           </div>
           <div class="auth-field auth-grid-2 auth-stagger-item">
             <div>
