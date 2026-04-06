@@ -2,7 +2,14 @@ const API_BASE = "http://localhost:8080";
 function setAuthButtonUI(user) {
   const openAuthModalBtn = document.getElementById("open-auth-modal");
   if (!openAuthModalBtn) return;
-  openAuthModalBtn.textContent = user?.fullName || "Đăng nhập";
+
+  if (user) {
+    openAuthModalBtn.textContent = `Đăng xuất (${user.fullName})`;
+    openAuthModalBtn.dataset.authState = "logged-in";
+  } else {
+    openAuthModalBtn.textContent = "Đăng nhập";
+    openAuthModalBtn.dataset.authState = "guest";
+  }
 }
 
 function saveAuthData(data) {
@@ -159,7 +166,20 @@ function initAuthModal() {
     }
   };
 
-  openAuthModalBtn.addEventListener("click", openAuthModal);
+  openAuthModalBtn.addEventListener("click", () => {
+    const isLoggedIn = openAuthModalBtn.dataset.authState === "logged-in";
+
+    if (isLoggedIn) {
+      const confirmed = confirm("Bạn có muốn đăng xuất không?");
+      if (!confirmed) return;
+
+      clearAuthData();
+      alert("Đã đăng xuất!");
+      return;
+    }
+
+    openAuthModal();
+  });
 
   if (closeAuthModalBtn) {
     closeAuthModalBtn.addEventListener("click", closeAuthModal);

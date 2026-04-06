@@ -731,7 +731,8 @@ function loadAuthModal() {
           </div>
           <div class="auth-field auth-stagger-item">
             <label>Email </label>
-            <div class="auth-input-wrap"><i data-lucide="mail" class="h-4 w-4"></i><input type="text" placeholder="Nhập email hoặc số điện thoại" /></div>
+            <div class="auth-input-wrap"><i data-lucide="mail" class="h-4 w-4"></i><input id ="login-email-input" type="email" placeholder="Nhập email" /></div>
+            
           </div>
           <div class="auth-field auth-stagger-item">
             <label>Mật khẩu</label>
