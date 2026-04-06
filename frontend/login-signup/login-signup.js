@@ -1,3 +1,59 @@
+const API_BASE = "http://localhost:8080";
+function setAuthButtonUI(user) {
+  const openAuthModalBtn = document.getElementById("open-auth-modal");
+  if (!openAuthModalBtn) return;
+  openAuthModalBtn.textContent = user?.fullName || "Đăng nhập";
+}
+
+function saveAuthData(data) {
+  if (!data) return;
+
+  if (data.accessToken) {
+    localStorage.setItem("accessToken", data.accessToken);
+  }
+
+  if (data.user) {
+    localStorage.setItem("currentUser", JSON.stringify(data.user));
+    setAuthButtonUI(data.user);
+  }
+}
+
+function clearAuthData() {
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("currentUser");
+  setAuthButtonUI(null);
+}
+
+async function hydrateCurrentUser() {
+  const token = localStorage.getItem("accessToken");
+
+  if (!token) {
+    setAuthButtonUI(null);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${API_BASE}/api/auth/me`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const result = await response.json();
+
+    if (!response.ok || !result.success) {
+      clearAuthData();
+      return;
+    }
+
+    localStorage.setItem("currentUser", JSON.stringify(result.data));
+    setAuthButtonUI(result.data);
+  } catch (error) {
+    console.error(error);
+    clearAuthData();
+  }
+}
 function initAuthModal() {
   const authModal = document.getElementById("auth-modal");
   const openAuthModalBtn = document.getElementById("open-auth-modal");
@@ -125,16 +181,101 @@ function initAuthModal() {
     }
   });
 
-  loginForm.addEventListener("submit", (e) => {
+  loginForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    alert("Đăng nhập thành công! Đây là bản giao diện mẫu.");
-    closeAuthModal();
+
+    const email = document.getElementById("login-email-input")?.value.trim();
+    const password = document.getElementById("login-password-input")?.value.trim();
+
+    if (!email || !password) {
+      alert("Vui lòng nhập đầy đủ email và mật khẩu");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        alert(result.message || "Đăng nhập thất bại");
+        return;
+      }
+
+      saveAuthData(result.data);
+      alert("Đăng nhập thành công!");
+      closeAuthModal();
+    } catch (error) {
+      console.error(error);
+      alert("Không thể kết nối tới server");
+    }
   });
 
-  signupForm.addEventListener("submit", (e) => {
+  signupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
-    alert("Tạo tài khoản thành công! Đây là bản giao diện mẫu.");
-    closeAuthModal();
+
+    const fullName = document.getElementById("signup-fullname-input")?.value.trim();
+    const email = document.getElementById("signup-email-input")?.value.trim();
+    const password = document.getElementById("signup-password-input")?.value.trim();
+    const confirmPassword = document.getElementById("signup-confirm-input")?.value.trim();
+
+    if (!fullName || !email || !password || !confirmPassword) {
+      alert("Vui lòng nhập đầy đủ thông tin đăng ký");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      alert("Mật khẩu xác nhận không khớp");
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_BASE}/api/auth/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          fullName,
+          email,
+          password,
+        }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok || !result.success) {
+        if (result.data && typeof result.data === "object") {
+          const firstError = Object.values(result.data)[0];
+          alert(firstError || "Đăng ký thất bại");
+        } else {
+          alert(result.message || "Đăng ký thất bại");
+        }
+        return;
+      }
+
+      alert("Tạo tài khoản thành công! Mời đăng nhập.");
+
+      const loginEmailInput = document.getElementById("login-email-input");
+      if (loginEmailInput) {
+        loginEmailInput.value = email;
+      }
+
+      signupForm.reset();
+      switchAuthTab("login");
+    } catch (error) {
+      console.error(error);
+      alert("Không thể kết nối tới server");
+    }
   });
 
   document.querySelectorAll("[data-password-target]").forEach((button) => {
@@ -151,4 +292,5 @@ function initAuthModal() {
   });
 
   switchAuthTab("login");
+  hydrateCurrentUser();
 }

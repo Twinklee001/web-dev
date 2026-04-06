@@ -267,13 +267,33 @@ document.addEventListener("DOMContentLoaded", () => {
   timelineActionsContainer.innerHTML = timelineActions
     .map(
       (action) => `
-    <div class="inline-flex items-center gap-2 rounded-full px-3 py-2 text-xs font-semibold ${action.color}">
+    <button type="button" class="timeline-action-btn inline-flex items-center gap-2 rounded-full border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500 transition-all duration-300 hover:border-slate-300 focus:scale-95" data-color="${action.color}">
       <i data-lucide="${action.icon}" class="h-4 w-4"></i>
       ${action.label}
-    </div>
+    </button>
   `,
     )
     .join("");
+
+  // Add click logic for timeline actions (allow multi-select)
+  setTimeout(() => { // ensure DOM is ready
+    document.querySelectorAll(".timeline-action-btn").forEach(btn => {
+      btn.addEventListener("click", function() {
+        const colorClasses = this.dataset.color.split(" ");
+        const isSelected = this.classList.contains("selected");
+        
+        if (isSelected) {
+          // Deselect
+          this.classList.remove("selected", "border-transparent", ...colorClasses);
+          this.classList.add("border-slate-200", "bg-slate-50", "text-slate-500");
+        } else {
+          // Select
+          this.classList.add("selected", "border-transparent", ...colorClasses);
+          this.classList.remove("border-slate-200", "bg-slate-50", "text-slate-500");
+        }
+      });
+    });
+  }, 0);
 
   // --- Activity Timeline (Hoạt động gần đây) ---
   const activityTimelineContainer = document.getElementById(
@@ -491,6 +511,179 @@ document.addEventListener("DOMContentLoaded", () => {
       ".scroll-reveal, .scroll-reveal-left, .scroll-reveal-right, .scroll-reveal-scale",
     )
     .forEach((el) => revealObserver.observe(el));
+
+  // ==================== STICKY HEADER + COLLAPSIBLE NAV + SCROLL-TO-TOP ====================
+
+  const header = document.getElementById("main-header");
+  const topNavBar = document.querySelector("nav.relative"); // the <nav> with top-nav-container
+  const hamburgerBtn = document.getElementById("hamburger-btn");
+  const navDropdown = document.getElementById("nav-dropdown");
+  const navDropdownItems = document.getElementById("nav-dropdown-items");
+  const scrollTopBtn = document.getElementById("scroll-top-btn");
+
+  // Add notification dot to hamburger
+  const dot = document.createElement("span");
+  dot.className = "nav-collapsed-dot";
+  hamburgerBtn.appendChild(dot);
+
+  // Populate dropdown with same nav items
+  navDropdownItems.innerHTML = topNav
+    .map(
+      (item) => `
+    <button class="inline-flex h-10 items-center gap-2 rounded-xl border px-3 text-sm font-medium shadow-sm transition duration-200 ${
+      item.active
+        ? "border-emerald-300 bg-emerald-50 text-emerald-700"
+        : "border-slate-200 bg-white text-slate-600 hover:border-emerald-200 hover:bg-emerald-50 hover:text-emerald-700"
+    }">
+      <i data-lucide="${item.icon}" class="h-4 w-4 ${item.active ? "text-emerald-700" : "text-slate-500"}"></i>
+      <span class="whitespace-nowrap">${item.label}</span>
+    </button>
+  `,
+    )
+    .join("");
+
+  // Re-render lucide icons in the dropdown
+  lucide.createIcons({ node: navDropdownItems });
+
+  let isNavCollapsed = false;
+  let isDropdownOpen = false;
+  let isHeaderScrolled = false;
+  let isScrollTopVisible = false;
+  const SCROLL_THRESHOLD = 80;
+
+  // Scroll listener with requestAnimationFrame throttling
+  let ticking = false;
+  let scrollTimeout;
+
+  window.addEventListener(
+    "scroll",
+    () => {
+      // 165Hz Hack: Stop intense hit-testing and hover calculations while scrolling
+      if (!document.body.classList.contains("disable-hover")) {
+        document.body.classList.add("disable-hover");
+      }
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        document.body.classList.remove("disable-hover");
+      }, 150);
+
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const scrollY = window.scrollY;
+
+          // Header shadow - exactly zero DOM writes unless threshold crossed
+          if (scrollY > 10 && !isHeaderScrolled) {
+            isHeaderScrolled = true;
+            header.classList.add("header-scrolled");
+          } else if (scrollY <= 10 && isHeaderScrolled) {
+            isHeaderScrolled = false;
+            header.classList.remove("header-scrolled");
+          }
+
+          // Collapse / show top-nav bar
+          if (scrollY > SCROLL_THRESHOLD && !isNavCollapsed) {
+            isNavCollapsed = true;
+            topNavBar.classList.add("top-nav-hidden");
+            topNavBar.classList.remove("top-nav-visible");
+            dot.classList.add("active");
+          } else if (scrollY <= SCROLL_THRESHOLD && isNavCollapsed) {
+            isNavCollapsed = false;
+            topNavBar.classList.remove("top-nav-hidden");
+            topNavBar.classList.add("top-nav-visible");
+            dot.classList.remove("active");
+            // Close dropdown when nav is back
+            if (isDropdownOpen) {
+              isDropdownOpen = false;
+              navDropdown.classList.remove("dropdown-open");
+            }
+          }
+
+          // Scroll-to-top button
+          if (scrollY > 600 && !isScrollTopVisible) {
+            isScrollTopVisible = true;
+            scrollTopBtn.classList.add("visible");
+          } else if (scrollY <= 600 && isScrollTopVisible) {
+            isScrollTopVisible = false;
+            scrollTopBtn.classList.remove("visible");
+          }
+          
+          ticking = false;
+        });
+        ticking = true;
+      }
+    },
+    { passive: true },
+  );
+
+  // Hamburger click → toggle dropdown (only when nav is collapsed)
+  hamburgerBtn.addEventListener("click", () => {
+    if (!isNavCollapsed) return;
+    isDropdownOpen = !isDropdownOpen;
+    if (isDropdownOpen) {
+      navDropdown.classList.remove("hidden");
+      // Force reflow so the transition plays
+      navDropdown.offsetHeight;
+      navDropdown.classList.add("dropdown-open");
+    } else {
+      navDropdown.classList.remove("dropdown-open");
+      navDropdown.addEventListener(
+        "transitionend",
+        () => {
+          if (!isDropdownOpen) navDropdown.classList.add("hidden");
+        },
+        { once: true },
+      );
+    }
+  });
+
+  // Close dropdown when clicking outside
+  document.addEventListener("click", (e) => {
+    if (
+      isDropdownOpen &&
+      !hamburgerBtn.contains(e.target) &&
+      !navDropdown.contains(e.target)
+    ) {
+      isDropdownOpen = false;
+      navDropdown.classList.remove("dropdown-open");
+      navDropdown.addEventListener(
+        "transitionend",
+        () => {
+          if (!isDropdownOpen) navDropdown.classList.add("hidden");
+        },
+        { once: true },
+      );
+    }
+  });
+
+  // Scroll-to-top click
+  scrollTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  // ==================== FLOATING AI CHATBOX ====================
+  const aiChatFab = document.getElementById("ai-chat-fab");
+  const aiChatPanel = document.getElementById("ai-chat-panel");
+  const aiChatMinimize = document.getElementById("ai-chat-minimize");
+  let isChatOpen = false;
+
+  function toggleChat(open) {
+    isChatOpen = open;
+    if (open) {
+      aiChatPanel.classList.remove("ai-chat-panel-hidden");
+      aiChatPanel.classList.add("ai-chat-panel-open");
+      aiChatFab.classList.add("ai-fab-open");
+    } else {
+      aiChatPanel.classList.remove("ai-chat-panel-open");
+      aiChatPanel.classList.add("ai-chat-panel-hidden");
+      aiChatFab.classList.remove("ai-fab-open");
+    }
+  }
+
+  aiChatFab.addEventListener("click", () => toggleChat(!isChatOpen));
+  aiChatMinimize.addEventListener("click", () => toggleChat(false));
+
+  // Re-render lucide icons for the floating widget
+  lucide.createIcons({ node: document.getElementById("ai-chat-widget") });
 });
 //form-login-signup
 function loadAuthModal() {
@@ -537,7 +730,7 @@ function loadAuthModal() {
             <p class="auth-form__desc">Truy cập dữ liệu lô trồng, nhật ký và các đề xuất AI của bạn.</p>
           </div>
           <div class="auth-field auth-stagger-item">
-            <label>Email hoặc số điện thoại</label>
+            <label>Email </label>
             <div class="auth-input-wrap"><i data-lucide="mail" class="h-4 w-4"></i><input type="text" placeholder="Nhập email hoặc số điện thoại" /></div>
           </div>
           <div class="auth-field auth-stagger-item">
@@ -567,15 +760,15 @@ function loadAuthModal() {
           </div>
           <div class="auth-field auth-stagger-item">
             <label>Họ và tên</label>
-            <div class="auth-input-wrap"><i data-lucide="user" class="h-4 w-4"></i><input type="text" placeholder="Nhập họ và tên" /></div>
+            <div class="auth-input-wrap"><i data-lucide="user" class="h-4 w-4"></i><input id="signup-fullname-input" type="text" placeholder="Nhập họ và tên" /></div>
           </div>
           <div class="auth-field auth-stagger-item">
             <label>Email</label>
-            <div class="auth-input-wrap"><i data-lucide="mail" class="h-4 w-4"></i><input type="email" placeholder="Nhập địa chỉ email" /></div>
+            <div class="auth-input-wrap"><i data-lucide="mail" class="h-4 w-4"></i><input id="signup-email-input" type="email" placeholder="Nhập địa chỉ email" /></div>
           </div>
           <div class="auth-field auth-stagger-item">
             <label>Số điện thoại</label>
-            <div class="auth-input-wrap"><i data-lucide="phone" class="h-4 w-4"></i><input type="tel" placeholder="Nhập số điện thoại đăng ký" /></div>
+            <div class="auth-input-wrap"><i data-lucide="phone" class="h-4 w-4"></i><input id="signup-phone-input" type="tel" placeholder="Nhập số điện thoại đăng ký" /></div>
           </div>
           <div class="auth-field auth-grid-2 auth-stagger-item">
             <div>
